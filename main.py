@@ -29,7 +29,6 @@ def change(emotion):
 
 
 export = pd.read_excel('export.xlsx')
-r=[]
 
 for f in range(len(export)):
     if export['type'].at[f] == 'TEST':
