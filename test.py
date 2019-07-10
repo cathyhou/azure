@@ -1,38 +1,66 @@
-export = pd.read_excel('export.xlsx')
-r = []
+import cognitive_face as CF
+import pandas as pd
+import sys
+from openpyxl import load_workbook
+import time
 
-for f in range(len(export)):
-    if export['type'].at[f] == 'TEST':
-        image_url = export['name'].at[f][60:]
-        label = export['label'].at[f]
+wb = load_workbook(filename = 'results.xlsx')
+ws = wb['results']
 
-        response = requests.post(face_api_url, params=params,
-                                 headers=headers, json={"url": image_url})
+# Replace with a valid subscription key (keeping the quotes in place).
+KEY = '92d758df5cd64cc9a2339c33d21adebd'
+CF.Key.set(KEY)
 
-        j = json.dumps(response.json())
-        result = json.loads(j)
+# Replace with your regional Base URL
+BASE_URL = 'https://westcentralus.api.cognitive.microsoft.com/face/v1.0'
+CF.BaseUrl.set(BASE_URL)
 
-        emotions = ['anger', 'n', 'n', 'fear', 'happiness', 'neutral', 'sadness', 'n']
 
-        anger = 0.000
-        fear = 0.000
-        happiness = 0.000
-        neutral = 0.000
-        sadness = 0.000
+def change(emotion):
+    current = ['anger', 'contempt', 'disgust', 'fear', 'happiness', 'neutral', 'sadness', 'surprise']
+    transform = ['ANGRY', 'CONTEMPT', 'DISGUST', 'SCARED', 'HAPPY', 'NEUTRAL', 'SAD', 'SURPRISED']
+    result = ''
+    for i in range(8):
+        if current[i] == emotion:
+            result = transform[i]
+            break
+    return result
 
-        confidence = 0.000
-        emotion = ''
 
-        for emo in emotions:
-            if emo == 'n':
-                continue
-            else:
-                e = emo
-                emo = result[0]['faceAttributes']['emotion'][emo]
-                if emo > confidence:
-                    confidence = emo
-                    emotion = change(e)
+img_url = ''
+label = 'SAD'
+row=114
 
-        r.__add__([emotion == label, confidence])
+faces = CF.face.detect(img_url, attributes='emotion')
 
-print(r)
+#print(faces)
+#sys.exit()
+
+emotions = ['anger', 'contempt', 'disgust', 'fear', 'happiness', 'neutral', 'sadness', 'surprise']
+
+anger = 0.000
+fear = 0.000
+happiness = 0.000
+neutral = 0.000
+sadness = 0.000
+
+confidence = 0.000
+emotion = ''
+
+for emo in emotions:
+    if emo == 'n':
+        continue
+    else:
+        e = emo
+        emo = faces[0]['faceAttributes']['emotion'][emo]
+        if emo > confidence:
+            confidence = emo
+            emotion = change(e)
+
+ws['B' + str(row)] = emotion
+ws['C' + str(row)] = confidence
+ws['D' + str(row)] = emotion==label
+wb.save('results.xlsx')
+
+
+
