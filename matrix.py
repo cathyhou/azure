@@ -7,6 +7,8 @@ wb = load_workbook(filename = 'results.xlsx')
 ws = wb['results']
 array = [[0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0], [0,0,0,0,0]]
 
+# build confusion matrix for rekognition results and automl
+
 
 def change(emo):
     emotions = ['HAPPY', 'NEUTRAL', 'SCARED', 'ANGRY', 'SAD']
@@ -30,14 +32,15 @@ for row in range(128):
 df_cm = pd.DataFrame(array, columns=["HAPPY","NEUTRAL","SCARED","ANGRY","SAD"], index=["HAPPY","NEUTRAL","SCARED","ANGRY","SAD"] )
 plt.figure(figsize = (10,10))
 sn.set(font_scale=1)
-ax = sn.heatmap(df_cm, annot=True,annot_kws={"size": 10}, cbar=False, cmap='Blues')# font size
+ax = sn.heatmap(df_cm, annot=True,annot_kws={"size": 24}, cbar=False, cmap='Blues', fmt='g')# font size
 ax.xaxis.tick_top()
 ax.xaxis.set_ticks_position('none')
-ax.set_xlabel('Predicted \n', fontsize=16)
-ax.xaxis.set_label_position('top')
-plt.yticks(va='center')
-plt.ylabel('True \n', fontsize=16)
-#plt.show()
+plt.yticks(va='center', size=16)
+plt.xticks(va='center', size=16)
+plt.ylabel('True \n', fontsize=20, fontweight='bold')
+plt.title('Predicted \n', fontsize=20, fontweight='bold')
+plt.xlabel('\n AZURE', fontsize=28, fontweight='heavy')
+plt.savefig('AzureConfusion.eps')
 
 array2 = array
 
@@ -49,14 +52,16 @@ for row in range(5):
         current = array2[row][col]
         array2[row][col] = round(current/s * 100.00, 1)
 
-df_cm = pd.DataFrame(array2, columns=["HAPPY","NEUTRAL","SCARED","ANGRY","SAD"], index=["HAPPY","NEUTRAL","SCARED","ANGRY","SAD"] )
+df_cm = pd.DataFrame(array, columns=["HAPPY","NEUTRAL","SCARED","ANGRY","SAD"], index=["HAPPY","NEUTRAL","SCARED","ANGRY","SAD"] )
 plt.figure(figsize = (10,10))
 sn.set(font_scale=1)
-ax = sn.heatmap(df_cm, annot=True,annot_kws={"size": 10}, cbar=False, cmap='Blues', fmt='g')# font size
+ax = sn.heatmap(df_cm, annot=True,annot_kws={"size": 10}, cbar=False, cmap='Blues')# font size
 ax.xaxis.tick_top()
 ax.xaxis.set_ticks_position('none')
 ax.set_xlabel('Predicted \n', fontsize=16)
 ax.xaxis.set_label_position('top')
 plt.yticks(va='center')
 plt.ylabel('True \n', fontsize=16)
+
 plt.show()
+

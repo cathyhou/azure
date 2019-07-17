@@ -14,6 +14,8 @@ def toEmotion(emo):
     return 'error'
 
 
+# determine what correct emotion is from image file path
+
 for i in range(128):
     row = str(i+2)
     img_url = ws['A'+row].value
